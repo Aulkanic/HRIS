@@ -1,16 +1,37 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Form, Input } from 'antd'
+import { Form, Input, notification } from 'antd'
 import { CustomButton } from '../../../components'
 import icon from '../../../assets/icon1.png'
 import { useNavigate } from 'react-router-dom'
 import { RouterUrl } from '../../../routes'
+import { AdminLogin } from '../../../config/services/request'
+import { saveAdminInfo } from '../../../zustand/store/store.provider'
 
 export const Login = () => {
   const navigate = useNavigate()
 
-  const onFinish = (values:any) =>{
-    console.log(values) 
-    navigate(RouterUrl.Home)
+  const onFinish = async(values:any) =>{
+try {
+        const formData = new FormData()
+        formData.append('username', values.username)
+        formData.append('password', values.password)
+        const res = await AdminLogin.POST(formData)
+        if(res.data.data.success === 0){
+            notification.error({
+                message: res.data.data.message
+            })
+            return
+        }
+        notification.success({
+            message: 'Login successfully'
+        })
+        saveAdminInfo(res.data.data.results)
+        navigate(RouterUrl.Home)
+} catch (error:any) {
+    notification.error({
+        message: error.msg
+    })
+}
   }
   return (
     <div className='flex h-screen w-full justify-center items-center bg-gray-200'>
@@ -21,7 +42,7 @@ export const Login = () => {
                     <p className='text-[#696969] font-normal text-[20px] leading-[23px]'>Please log in first</p>
                 </div>
                 <Form onFinish={onFinish} layout='vertical' className="p-8">
-                    <Form.Item name='email' label={<span className='text-[20px] text-arial leading-[23px]'>Email</span>}>
+                    <Form.Item name='username' label={<span className='text-[20px] text-arial leading-[23px]'>Email</span>}>
                         <Input className='w-[470px] h-[50px]'  />
                     </Form.Item>
                     <Form.Item name='password' className='mb-12' label={<span className='text-[20px] text-arial leading-[23px]'>Password</span>}>
@@ -30,6 +51,7 @@ export const Login = () => {
                     <Form.Item className='w-full flex justify-end items-end'>
                         <CustomButton
                         children='Log in'
+                        htmlType='submit'
                         classes='bg-gradient-to-r from-blue-600 to-blue-300 h-[40px] rounded-full w-[150px] text-white text-[20px] font-arial leading-[28.2px] font-extrabold'
                         />
                     </Form.Item>

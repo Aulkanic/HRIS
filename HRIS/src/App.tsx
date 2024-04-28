@@ -2,7 +2,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { RouterUrl } from './routes';
 import { Private, Public } from './layout';
 import './App.css'
-import { AddGuestForm, ClientPage, DepartmentPage, Error, Home, Login, ReservationPage, RoomPage, SettingPage } from './pages';
+import { AddGuestForm, AddReservationForm, ClientPage, DepartmentPage, Error, Home, Login, ReservationPage, RoomPage, SettingPage, TransactionPage } from './pages';
 
 function App() {
   const router = createBrowserRouter([
@@ -24,10 +24,12 @@ function App() {
       children:[
         {path:RouterUrl.Home,element:<Home/>},
         {path:RouterUrl.AddGuest,element:<AddGuestForm/>},
+        {path:RouterUrl.AddReservation,element:<AddReservationForm/>},
         {path:RouterUrl.Client,element:<ClientPage/>},
         {path:RouterUrl.Department,element:<DepartmentPage/>},
         {path:RouterUrl.Reservation,element:<ReservationPage/>},
         {path:RouterUrl.Room,element:<RoomPage/>},
+        {path:RouterUrl.Transaction,element:<TransactionPage/>},
         {path:RouterUrl.Setting,element:<SettingPage/>},
       ]
     },

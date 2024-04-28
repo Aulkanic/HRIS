@@ -3,7 +3,8 @@ import { Avatar, Layout, Menu, MenuProps, theme } from 'antd';
 import { MdDashboard,MdOutlineBedroomChild } from "react-icons/md";
 import { ImUserTie } from "react-icons/im";
 import { GrSchedules } from "react-icons/gr";
-import { IoMdSettings,IoIosLogOut } from "react-icons/io";
+import { FaMoneyBillTransfer } from "react-icons/fa6";
+import { IoIosLogOut } from "react-icons/io";
 import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
 import icon from '../assets/icon2.png'
 import icon1 from '../assets/icon1.png'
@@ -31,11 +32,11 @@ function getItem(
 }
 const items: MenuItem[] = [
     getItem('Dashboard', '1', <MdDashboard size={20} />,),
-    getItem('Client', '2', <ImUserTie size={20} />),
+    getItem('Guests', '2', <ImUserTie size={20} />),
     getItem('Room', '3', <MdOutlineBedroomChild size={20} />),
     getItem('Reservation', '4', <GrSchedules size={20} />),
     getItem('Department', '5', <HiOutlineBuildingOffice2 size={20} />),
-    getItem('Setting', '6', <IoMdSettings size={20} />),
+    getItem('Transactions', '6', <FaMoneyBillTransfer size={20} />),
     getItem('Log out', '7', <IoIosLogOut size={20} />),
   ];
 
@@ -72,11 +73,11 @@ export default function Private() {
             navigate(RouterUrl.Department)
             break;  
           case '6':
-            navigate(RouterUrl.Setting)
+            navigate(RouterUrl.Transaction)
             break; 
           case '7':
-            navigate(RouterUrl.Login);
-            break;      
+            navigate(RouterUrl.Login)
+            break; 
           default:
             break;
         }
@@ -87,7 +88,7 @@ export default function Private() {
         breakpoint="lg"
         collapsedWidth="0"
         style={{ background: colorBgContainer}}
-        className='border-r-2 border-[#006394]'
+        className='border-r-2 px-4 border-[#006394]'
         width={250}
       >
         <div className="p-3 text-left flex flex-col items-center justify-center space-y-5">
@@ -111,7 +112,7 @@ export default function Private() {
               ? '4' 
               : currentPathname === RouterUrl.Department
               ? '5'
-              : currentPathname === RouterUrl.Setting
+              : currentPathname === RouterUrl.Transaction
               ? '6'
               : '0',
           ]}

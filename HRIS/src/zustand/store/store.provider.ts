@@ -4,7 +4,14 @@ const selector = (key:string) => (state:any) => state[key];
 const storeProvider = useStore.getState();
 export const {
     saveAdminInfo,
-    saveGuestFormInfo
+    saveGuestFormInfo,
+    resetGuestForm,
+    resetReserveForm,
+    saveRoomList,
+    saveGuestList,
+    saveReservationList,
+    saveTransactionList,
+    saveReserveFormInfo
 } = storeProvider
 
 

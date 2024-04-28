@@ -1,19 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type StateCreator } from "zustand/vanilla";
-import { T_GuestForm } from "../../../types";
+import { T_GuestForm, T_ReserveForm } from "../../../types";
 
 
 interface AdminState {
     loading?:boolean;
     info?:any;
     form?:T_GuestForm;
+    reserveFrm?:T_ReserveForm;
     responseMsg?:string;
+    rooms?:any;
+    guests?:any;
+    reservation?:any;
+    transaction?:any;
 }
 
 export interface AdminSlice {
     admin: AdminState;
     saveAdminInfo: (info: any) => void;
     saveGuestFormInfo: (values:any) => void;
+    saveReserveFormInfo: (values:any) => Promise<boolean>;
+    resetGuestForm:() => void;
+    resetReserveForm: ()=>void;
+    saveRoomList: (payload:any) => void;
+    saveGuestList: (payload:any) => void;
+    saveReservationList: (payload:any) => void;
+    saveTransactionList: (payload:any) => void;
 }
 
 const initialState:AdminState = {
@@ -23,25 +35,43 @@ const initialState:AdminState = {
     form:{
         firstName:'',
         middleInitial:'',
-        lastName:'',
-        houseNo:'',
+        surName:'',
+        houseNum:'',
         street:'',
         barangay:'',
         city:'',
         province:'',
-        contactNo:'',
+        contactNum:'',
         paymentMethod:'',
         amountToPay:0,
         amountReceived:0,
         discount:0,
         balance:0,
-        status:'Pending',
         arrival:new Date(),
         departure: new Date(),
         roomType:'',
         noOfDays:1,
-        noOfPax:0
-    }
+        noOfPax:0,
+        paymentStatus:''
+    },
+    reserveFrm:{
+        firstName:'',
+        middleInitial:'',
+        surName:'',
+        houseNum:'',
+        street:'',
+        barangay:'',
+        city:'',
+        province:'',
+        contactNum:'',
+        arrival:new Date(),
+        departure: new Date(),
+        roomType:'',
+        noOfDays:1,
+        noOfPax:0,
+    },
+    rooms:[],
+    guests:[]
 }
 
 const createAdminSlice: StateCreator<AdminSlice> = (set) =>({
@@ -77,7 +107,77 @@ const createAdminSlice: StateCreator<AdminSlice> = (set) =>({
                 }
             }))
         }
-    }
+    },
+    saveReserveFormInfo: async (payload: any) => {
+        return new Promise((resolve, reject) => {
+          try {
+            set((state) => ({
+              ...state,
+              admin: {
+                ...state.admin,
+                reserveFrm: {
+                  ...(state.admin!.reserveFrm || initialState.reserveFrm), // Keep existing form fields
+                  ...payload // Update with new fields from payload
+                }
+              }
+            }));
+            resolve(true); // Resolve the promise once the state update is complete
+          } catch (error) {
+            reject(error); // Reject the promise if there's an error
+          }
+        });
+    },
+    resetGuestForm:() =>{
+        set((state)=>{
+           return {...state, admin : {...state.admin, form: initialState.form}};
+       })
+    },
+    resetReserveForm:() =>{
+        set((state)=>{
+           return {...state, admin : {...state.admin, reserveFrm: initialState.reserveFrm}};
+       })
+    },
+    saveRoomList:(payload:any) =>{
+        set((state) => ({
+            ...state,
+            admin: {
+              ...state.admin,
+              rooms:payload,
+              responseMsg: '',
+            },
+          })); 
+    },
+    saveGuestList:(payload:any) =>{
+        set((state) => ({
+            ...state,
+            admin: {
+              ...state.admin,
+              guests:payload,
+              responseMsg: '',
+            },
+          })); 
+    },
+    saveReservationList:(payload:any) =>{
+        set((state) => ({
+            ...state,
+            admin: {
+              ...state.admin,
+              reservation:payload,
+              responseMsg: '',
+            },
+          })); 
+    },
+    saveTransactionList:(payload:any) =>{
+        console.log(payload)
+        set((state) => ({
+            ...state,
+            admin: {
+              ...state.admin,
+              transaction:payload,
+              responseMsg: '',
+            },
+          })); 
+    },
 })
 
 export default createAdminSlice

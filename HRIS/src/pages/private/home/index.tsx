@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FaUsers,FaDollarSign } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
 import { HiClipboardDocumentList } from "react-icons/hi2";
 import { HiUserAdd } from "react-icons/hi";
 import { IoHomeOutline } from "react-icons/io5";
@@ -49,11 +49,7 @@ export const Home = () => {
               <FaUsers color='white' className='bg-sky-600 rounded-full p-2' size={60}/>
               </div>
             </div>
-            <div className='w-[250px] flex justify-between items-center p-4 rounded-md h-[100px] shadow-[0px_6px_10px_0px_#D3D3D3]'>
-              <div>
-              <FaDollarSign color='white' className='bg-[#03A000] rounded-full p-2' size={60}/>
-              </div>
-            </div>
+
             <div className='w-[250px] flex justify-between items-center p-4 rounded-md h-[100px] shadow-[0px_6px_10px_0px_#D3D3D3]'>
               <div>
               <p className='text-[#FFA800] font-semibold text-[20px]'>Total Reservation</p>

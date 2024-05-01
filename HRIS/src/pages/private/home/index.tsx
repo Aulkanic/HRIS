@@ -39,8 +39,8 @@ export const Home = () => {
   return (
     <div>
       <div>
-        <div className='flex h-[150px] gap-4'>
-            <div className='w-[250px] flex justify-between items-center p-4 rounded-md h-[100px] shadow-[0px_6px_10px_0px_#D3D3D3]'>
+        <div className='flex flex-wrap h-[150px] gap-4'>
+            <div className='flex-1 flex justify-between items-center p-4 rounded-md h-[100px] shadow-[0px_6px_10px_0px_#D3D3D3]'>
               <div>
               <p className='text-[#006394] font-semibold text-[20px]'>Total guest</p>
               <p className='text-[#006394] font-semibold text-[20px]'>{admin.guests?.length}</p>
@@ -50,7 +50,7 @@ export const Home = () => {
               </div>
             </div>
 
-            <div className='w-[250px] flex justify-between items-center p-4 rounded-md h-[100px] shadow-[0px_6px_10px_0px_#D3D3D3]'>
+            <div className='flex-1 flex justify-between items-center p-4 rounded-md h-[100px] shadow-[0px_6px_10px_0px_#D3D3D3]'>
               <div>
               <p className='text-[#FFA800] font-semibold text-[20px]'>Total Reservation</p>
               <p className='text-[#FFA800] font-semibold text-[20px]'>{admin.reservation?.length}</p>

@@ -57,14 +57,14 @@ export const AddReservationForm = () => {
       setCurrent(current + 1);
     }
     const saveSecondPart = async(values:any) =>{
-      console.log('Success:', values);
-      values.roomType = admin.rooms?.find((item:any) => item.id === values.roomId)?.type
+      admin.reserveFrm.noOfDays = values.noOfDays
+      admin.reserveFrm.noOfPax = values.noOfPax
+      admin.reserveFrm.roomId = values.roomId
+      admin.reserveFrm.roomType = admin.rooms?.find((item:any) => item.id === values.roomId)?.type
+      admin.reserveFrm.arrival = new Date(values.arrival).toISOString()
+      admin.reserveFrm.departure = new Date(values.departure).toISOString()
       try { 
-        const saved = await saveReserveFormInfo(values)
-        if(saved){
         setIsLoading(true)
-        admin.reserveFrm.arrival = new Date(admin.reserveFrm.arrival).toISOString()
-        admin.reserveFrm.departure = new Date(admin.reserveFrm.departure).toISOString()
           const formData = new FormData();
          for (const key in admin.reserveFrm) {
                 if (Object.hasOwnProperty.call(admin.reserveFrm,key)) {
@@ -89,7 +89,6 @@ export const AddReservationForm = () => {
             navigate(RouterUrl.Home)
             resetReserveForm()
           }
-        }
 
     } catch (error) {
       notification.error({

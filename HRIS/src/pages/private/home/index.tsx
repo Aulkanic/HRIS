@@ -41,7 +41,7 @@ export const Home = () => {
       <p>{`${data?.type}`}</p>
     )
     },
-    {key:3,title:"DAYS OF DAYS",dataIndex:'noOfDays'},
+    {key:3,title:"NUMBER OF DAYS",dataIndex:'noOfDays'},
     {key:4,title:"ARRIVAL",dataIndex:'arrival',      
     render:(data:any) =>(
       <p>{dateFormatter(data)}</p>

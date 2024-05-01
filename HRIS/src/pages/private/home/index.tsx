@@ -12,6 +12,7 @@ import { saveGuestList, saveReservationList, saveRoomList, selector } from "../.
 import { useEffect } from "react";
 import useStore from "../../../zustand/store/store";
 import { Room } from "../../../types";
+import { dateFormatter } from "../../../config/utils/util";
 
 export const Home = () => {
   const navigate = useNavigate()
@@ -30,12 +31,27 @@ export const Home = () => {
   },[])
   
   const columns = [
-    {key:0,title:"BOOK NUMBER"},
-    {key:1,title:"NAME"},
-    {key:2,title:"ROOM TYPE"},
-    {key:3,title:"DAYS OF STAY"},
-    {key:4,title:"DATE"},
+    {key:0,title:"GUEST NAME",dataIndex:'guests',
+      render:(data:any) =>(
+        <p>{`${data?.firstName} ${data?.lastName}`}</p>
+      )
+    },
+    {key:2,title:"ROOM TYPE",dataIndex:'room',
+    render:(data:any) =>(
+      <p>{`${data?.type}`}</p>
+    )
+    },
+    {key:3,title:"DAYS OF DAYS",dataIndex:'noOfDays'},
+    {key:4,title:"ARRIVAL",dataIndex:'arrival',      
+    render:(data:any) =>(
+      <p>{dateFormatter(data)}</p>
+    )},
+    {key:5,title:"DEPARTURE",dataIndex:'departure',      
+    render:(data:any) =>(
+      <p>{dateFormatter(data)}</p>
+    )},
   ]
+  console.log(admin)
   return (
     <div>
       <div>
@@ -68,10 +84,11 @@ export const Home = () => {
         </div>
         <div className='w-full flex flex-nowrap'>
           <div className='w-[75%] h-full'>
-          <h2 className='mb-1 text-[#006394] text-[20px]'>Latest booking</h2>
+          <h2 className='mb-1 text-[#006394] text-[20px]'>Latest Reservation</h2>
             <CustomTable
               columns={columns}
               classes='h-[400px]'
+              datasource={admin.reservation?.reverse()}
             />
           </div>
           <div className='flex-1 h-max px-4'>

@@ -88,7 +88,7 @@ export const Home = () => {
             <CustomTable
               columns={columns}
               classes='h-[400px]'
-              datasource={admin.reservation?.reverse()}
+              datasource={admin.reservation?.filter((reservation:any) => reservation.createdAt.slice(0, 10) === new Date().toISOString().slice(0, 10)).sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())}
             />
           </div>
           <div className='flex-1 h-max px-4'>

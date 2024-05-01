@@ -43,7 +43,7 @@ export const Home = () => {
             <div className='w-[250px] flex justify-between items-center p-4 rounded-md h-[100px] shadow-[0px_6px_10px_0px_#D3D3D3]'>
               <div>
               <p className='text-[#006394] font-semibold text-[20px]'>Total guest</p>
-              <p className='text-[#006394] font-semibold text-[20px]'>{admin.guests.length}</p>
+              <p className='text-[#006394] font-semibold text-[20px]'>{admin.guests?.length}</p>
               </div>
               <div>
               <FaUsers color='white' className='bg-sky-600 rounded-full p-2' size={60}/>
@@ -61,7 +61,7 @@ export const Home = () => {
             <div className='w-[250px] flex justify-between items-center p-4 rounded-md h-[100px] shadow-[0px_6px_10px_0px_#D3D3D3]'>
               <div>
               <p className='text-[#FFA800] font-semibold text-[20px]'>Total Reservation</p>
-              <p className='text-[#FFA800] font-semibold text-[20px]'>{admin.reservation.length}</p>
+              <p className='text-[#FFA800] font-semibold text-[20px]'>{admin.reservation?.length}</p>
               </div>
               <div>
               <HiClipboardDocumentList color='white' className='bg-[#FFA800] rounded-full p-2' size={60}/>

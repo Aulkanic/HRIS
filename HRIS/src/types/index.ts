@@ -63,6 +63,7 @@ export interface Room {
     status: string;
     createdAt: Date;
     updatedAt: Date;
+    total: number;
     room: Room; // Room interface as a property
   }
   

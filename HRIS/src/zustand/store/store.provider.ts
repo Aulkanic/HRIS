@@ -11,7 +11,8 @@ export const {
     saveGuestList,
     saveReservationList,
     saveTransactionList,
-    saveReserveFormInfo
+    saveReserveFormInfo,
+    saveDepartmentServices
 } = storeProvider
 
 

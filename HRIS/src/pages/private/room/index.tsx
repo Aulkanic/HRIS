@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CustomButton } from '../../../components'
 import { AddRooms, AllRooms, UpdateRoom } from '../../../config/services/request'
 import { saveRoomList, selector } from '../../../zustand/store/store.provider'
@@ -111,13 +111,13 @@ export const RoomPage = () => {
   }
   const renderModalContent = () =>(
     <Form onFinish={onFinish} form={form} layout='vertical' className='mt-2'>
-      <Form.Item className='mb-1' label='Room Type' name='type'>
+      <Form.Item className='mb-1' label='Room Type' name='type' rules={[{ required: true, message: 'Please input room type!' }]}>
         <Input />
       </Form.Item>
-      <Form.Item className='mb-1' label='Rate' name='rate'>
+      <Form.Item className='mb-1' label='Rate' name='rate' rules={[{ required: true, message: 'Please input rate!' }]}>
         <InputNumber className='w-full' />
       </Form.Item>
-      <Form.Item className='mb-1' label='Status' name='status'>
+      <Form.Item className='mb-1' label='Status' name='status' rules={[{ required: true, message: 'Please select status!' }]}>
         <Select className="backdrop-shadow">
           <Select.Option value={0}>
             Inactive
@@ -128,14 +128,14 @@ export const RoomPage = () => {
         </Select>
       </Form.Item>
       <div className='flex gap-4 w-full flex-nowrap'>
-      <Form.Item className='mb-1 flex-1' label='Min. Capacity' name='minimumCapacity'>
+      <Form.Item className='mb-1 flex-1' label='Min. Capacity' name='minimumCapacity' rules={[{ required: true, message: 'Please input minimum Capacity!' }]}>
         <InputNumber className='w-full' />
       </Form.Item>
-      <Form.Item className='mb-1 flex-1' label='Max. Capacity' name='maximumCapacity'>
+      <Form.Item className='mb-1 flex-1' label='Max. Capacity' name='maximumCapacity' rules={[{ required: true, message: 'Please input maximum Capacity!' }]}>
         <InputNumber className='w-full' />
       </Form.Item>
       </div>
-      <Form.Item className='mb-1' label='Total No. of Rooms' name='availableRooms'>
+      <Form.Item className='mb-1' label='Total No. of Rooms' name='availableRooms' rules={[{ required: true, message: 'Please input number of available rooms!' }]}>
         <InputNumber className='w-full' />
       </Form.Item>
       <div className='w-full flex gap-4 justify-end items-end my-4'>

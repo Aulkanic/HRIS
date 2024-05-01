@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CustomTable } from '../../../components/table/customTable'
 import { AllReservations } from '../../../config/services/request'
 import { saveReservationList, selector } from '../../../zustand/store/store.provider'

@@ -88,7 +88,7 @@ export default function Private() {
         breakpoint="lg"
         collapsedWidth="0"
         style={{ background: colorBgContainer}}
-        className='border-r-2 px-4 border-[#006394]'
+        className='border-r-2 border-[#006394]'
         width={250}
       >
         <div className="p-3 text-left flex flex-col items-center justify-center space-y-5">

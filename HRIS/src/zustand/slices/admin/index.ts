@@ -11,6 +11,7 @@ interface AdminState {
     responseMsg?:string;
     rooms?:any;
     guests?:any;
+    department?:any;
     reservation?:any;
     transaction?:any;
 }
@@ -26,6 +27,7 @@ export interface AdminSlice {
     saveGuestList: (payload:any) => void;
     saveReservationList: (payload:any) => void;
     saveTransactionList: (payload:any) => void;
+    saveDepartmentServices: (payload:any) => void;
 }
 
 const initialState:AdminState = {
@@ -71,7 +73,11 @@ const initialState:AdminState = {
         noOfPax:0,
     },
     rooms:[],
-    guests:[]
+    guests:[],
+    department:{
+      list: [],
+      services:[]
+    }
 }
 
 const createAdminSlice: StateCreator<AdminSlice> = (set) =>({
@@ -178,6 +184,19 @@ const createAdminSlice: StateCreator<AdminSlice> = (set) =>({
             },
           })); 
     },
+    saveDepartmentServices:(payload:any) =>{
+      set((state) => ({
+          ...state,
+          admin: {
+            ...state.admin,
+            department:{
+              list:payload.department,
+              services:payload.service
+            },
+            responseMsg: '',
+          },
+        })); 
+  },
 })
 
 export default createAdminSlice

@@ -6,12 +6,15 @@ import { useNavigate } from 'react-router-dom'
 import { RouterUrl } from '../../../routes'
 import { AdminLogin } from '../../../config/services/request'
 import { saveAdminInfo } from '../../../zustand/store/store.provider'
+import { useState } from 'react'
 
 export const Login = () => {
   const navigate = useNavigate()
+  const [isLoading,setIsLoading] = useState(false)
 
   const onFinish = async(values:any) =>{
 try {
+    setIsLoading(true)
         const formData = new FormData()
         formData.append('username', values.username)
         formData.append('password', values.password)
@@ -20,17 +23,21 @@ try {
             notification.error({
                 message: res.data.data.message
             })
+            setIsLoading(false)
             return
         }
         notification.success({
             message: 'Login successfully'
         })
         saveAdminInfo(res.data.data.results)
+        setIsLoading(false)
         navigate(RouterUrl.Home)
 } catch (error:any) {
     notification.error({
         message: error.msg
     })
+    setIsLoading(false)
+    return
 }
   }
   return (
@@ -52,6 +59,7 @@ try {
                         <CustomButton
                         children='Log in'
                         htmlType='submit'
+                        loading={isLoading}
                         classes='bg-gradient-to-r from-blue-600 to-blue-300 h-[40px] rounded-full w-[150px] text-white text-[20px] font-arial leading-[28.2px] font-extrabold'
                         />
                     </Form.Item>

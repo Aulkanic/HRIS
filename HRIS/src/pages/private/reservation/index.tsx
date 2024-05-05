@@ -24,16 +24,24 @@ export const ReservationPage = () => {
     setFilter(key);
 };
   const columns = [
-    {key:0,title:'Reservation ID',dataIndex:'id'},
     {key:1,title:'Guest',dataIndex:'guests',
       render:(data:any) =>(
-        <div>{`${data?.firstName} ${data?.lastName}`}</div>
+        <p>{`${data?.firstName} ${data?.lastName}`}</p>
       )
     },
-    {key:2,title:'No of Days',dataIndex:'noOfDays'
+    {key:2,title:'No of Days',dataIndex:'noOfDays',
+    render:(data:any) =>(
+      <p>{data}</p>
+    )
     },
-    {key:3,title:'No of Pax',dataIndex:'noOfPax'},
-    {key:4,title:'Room ID',dataIndex:'roomId'},
+    {key:3,title:'No of Pax',dataIndex:'noOfPax',
+    render:(data:any) =>(
+      <p>{data}</p>
+    )},
+    {key:4,title:'Room ID',dataIndex:'roomId',
+    render:(data:any) =>(
+      <p>{data}</p>
+    )},
     {key:5,title:'Arrival',dataIndex:'arrival',      
     render:(data:any) =>(
       <p>{dateFormatter(data)}</p>

@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
 import { CustomButton } from '../../../components'
-import { AddRooms, AllRooms, UpdateRoom } from '../../../config/services/request'
+import { AddRooms, AllRooms, DeleteRoom, UpdateRoom } from '../../../config/services/request'
 import { saveRoomList, selector } from '../../../zustand/store/store.provider'
 import useStore from '../../../zustand/store/store'
 import { CustomTable } from '../../../components/table/customTable'
 import { Form, Input, InputNumber, Modal, Select, Tag, notification } from 'antd'
+import { currencyFormat } from '../../../config/utils/util'
+import Swal from 'sweetalert2'
 
 interface T_Form {
   id:number;
@@ -48,18 +50,35 @@ export const RoomPage = () => {
     setId(0)
   }
   const columns = [
-    {key:0,title:"Room ID",dataIndex:'id'},
-    {key:1,title:"Room Type",dataIndex:'type'},
-    {key:2,title:"Rate",dataIndex:'rate'},
+    {key:1,title:"Room Type",dataIndex:'type',
+    render:(data:any) =>(
+      <p>{data}</p>
+    )},
+    {key:2,title:"Rate",dataIndex:'rate',
+    render:(data:any) =>(
+      <p>{currencyFormat(data)}</p>
+    )},
     {key:3,title:"Status",dataIndex:'status',
       render:(data:any) =>(
         data ? <Tag color='success'>Active</Tag> : <Tag color='error'>Inactive</Tag>
       )
     },
-    {key:4,title:"Min Capacity",dataIndex:'maximumCapacity'},
-    {key:5,title:"Max Capacity",dataIndex:'minimumCapacity'},
-    {key:7,title:"Total No. of Rooms",dataIndex:'availableRooms'},
-    {key:8,title:"Total Occupied Rooms",dataIndex:'totalNoOfOccupiedRooms'},
+    {key:4,title:"Min Capacity",dataIndex:'maximumCapacity',
+    render:(data:any) =>(
+      <p>{data}</p>
+    )},
+    {key:5,title:"Max Capacity",dataIndex:'minimumCapacity',
+    render:(data:any) =>(
+      <p>{data}</p>
+    )},
+    {key:7,title:"Total No. of Rooms",dataIndex:'availableRooms',
+    render:(data:any) =>(
+      <p>{data}</p>
+    )},
+    {key:8,title:"No. Occupied Rooms",dataIndex:'totalNoOfOccupiedRooms',
+    render:(data:any) =>(
+      <p>{data}</p>
+    )},
     {key:9,title:"Actions",
       render:(data:any) =>(
         <div className='flex gap-2'>
@@ -67,6 +86,12 @@ export const RoomPage = () => {
             children='Edit'
             classes='w-20 bg-sky-600 text-white'
             onClick={() =>showModalOpen('edit',data)}
+          />
+          <CustomButton
+            children='Delete'
+            danger
+            classes='w-20'
+            onClick={() => handleDelete(data)}
           />
         </div>
       )
@@ -150,6 +175,49 @@ export const RoomPage = () => {
       </div>
     </Form>
   )
+  const handleDelete = (data: any) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You want to delete this room? ${data.type}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          setIsLoading(true)
+          const formData = new FormData()
+          formData.append('id',data.id)
+          const res = await DeleteRoom.DELETE(formData);
+          if(res.data.data && res.data.success === 1){
+            setIsLoading(false)
+            Fetch()
+            Swal.fire('Deleted!', `${data.type}`, 'success');
+          }else{
+            setIsLoading(false)
+            throw new Error();
+          }
+          // Handle success or failure accordingly
+         
+        } catch (error) {
+          console.log(error)
+          setIsLoading(false)
+          Swal.fire('Error!', 'Failed to delete item.', 'error');
+        }
+      }else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        Swal.fire({
+          title: "Cancelled",
+          text: "Delete was cancelled :)",
+          icon: "error"
+        });
+      }
+    });
+  };
   console.log(admin.rooms)
   return (
     <div>

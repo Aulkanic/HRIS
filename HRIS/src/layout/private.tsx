@@ -120,7 +120,7 @@ export default function Private() {
       </Sider>
       <Layout>
         <Header className='h-24 flex justify-between items-center' style={{ background: colorBgContainer }} >
-           <div>
+           <div className='text-[20px]'>
            {dateTime}
            </div>
             <Avatar size={52} src={icon1}  />

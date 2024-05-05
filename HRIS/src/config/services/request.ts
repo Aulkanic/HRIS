@@ -53,3 +53,17 @@ export const UpdateTransaction = {
 export const UpdateReservation = {
     PUT: (data:any) => axiosInstance.put(Endpoints.UpdateReservation + `/${data?.get('reservationId')}`, data)
 }
+export const UpdateGuest= {
+    PUT: (data:any) => axiosInstance.put(Endpoints.UpdateGuest + `/${data?.get('id')}`, data)
+}
+
+
+export const DeleteService = {
+    DELETE: (data:any) => axiosInstance.delete(Endpoints.DeleteService + `/${data?.get('id')}`,{data})
+}
+export const DeleteGuest = {
+    DELETE: (data:any) => axiosInstance.delete(Endpoints.DeleteGuest + `/${data?.get('id')}`,{data})
+}
+export const DeleteRoom = {
+    DELETE: (data:any) => axiosInstance.delete(Endpoints.DeleteRoom + `/${data?.get('id')}`,{data})
+}

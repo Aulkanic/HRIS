@@ -184,13 +184,13 @@ export const TransactionPage = () => {
   const columns = (filter !== 'Pending' && filter !== 'Cancelled') ? [
     {key:0,title:'Guest Name',dataIndex:'guests',
       render:(data:any) =>(
-        <div>{`${data?.firstName} ${data?.lastName}`}</div>
+        <p>{`${data?.firstName} ${data?.lastName}`}</p>
       )
     },
     {key:1,title:'Room Type',dataIndex:'guests',      
     render:(data:Guest) =>{
       return(
-      <p>{data?.reservations[0]?.room.type}</p>
+      <p>{data?.reservations[0]?.room?.type}</p>
     )}},
     {key:2,title:'No. of Days',dataIndex:'guests',      
     render:(data:Guest) =>{
@@ -236,7 +236,7 @@ export const TransactionPage = () => {
   ] : [
     {key:0,title:'Guest Name',dataIndex:'guests',
     render:(data:any) =>(
-      <div>{`${data?.firstName} ${data?.lastName}`}</div>
+      <p>{`${data?.firstName} ${data?.lastName}`}</p>
     )
   },
   {key:1,title:'Room Type',dataIndex:'room',      
@@ -388,11 +388,11 @@ try {
             <Row>
             {services?.map((val:any,idy:number) =>
             (
-              <Col span={12} key={idy}>
+              <Col span={16} key={idy}>
                 <Row gutter={[8, 0]} align="middle">
                   <Col>
                     <Checkbox
-                      className='text-nowrap'
+                      className='text-nowrap text-[20px]'
                       onChange={(e) => handleChange(e, val.name, data.name, val.price)}
                       value={val.name}
                     >
@@ -500,7 +500,6 @@ try {
       setIsLoading(false)
     }
   }
-  console.log(admin.reservation)
   return (
     <div>
       <div className='flex justify-between items-center mb-4'>
@@ -532,7 +531,7 @@ try {
       <Modal footer={null} title='Pay Now!' open={isOpen} onCancel={handleClose}>
         {renderModalContent()}
       </Modal>
-      <Modal footer={null} title='Avail Services!' open={isOpen1} onCancel={handleCloseService}>
+      <Modal footer={null} title={<p>Avail Services!</p>} open={isOpen1} onCancel={handleCloseService}>
         {renderServiceContent()}
       </Modal>
     </div>

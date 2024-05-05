@@ -4,9 +4,10 @@ import { CustomTable } from '../../../components/table/customTable'
 import { CustomButton } from '../../../components'
 import useStore from '../../../zustand/store/store'
 import { saveDepartmentServices, selector } from '../../../zustand/store/store.provider'
-import { AddService, AllDepartmentServices, UpdateService } from '../../../config/services/request'
+import { AddService, AllDepartmentServices, DeleteService, UpdateService } from '../../../config/services/request'
 import { currencyFormat, dateFormatter } from '../../../config/utils/util'
 import { Form, Input, InputNumber, Modal, Select, Tag, notification } from 'antd'
+import Swal from 'sweetalert2'
 
 export const DepartmentPage = () => {
   const admin = useStore(selector('admin'))
@@ -77,7 +78,11 @@ export const DepartmentPage = () => {
     }
   }
   const columns = [
-    {key:0,title:'Service Name',dataIndex:'name'},
+    {key:0,title:'Service Name',dataIndex:'name',
+    render:(data:any) =>(
+      <p>{data}</p>
+    )
+    },
     {key:1,title:'Price',dataIndex:'price',
       render:(data:any) =>(
         <p>{currencyFormat(data ?? 0)}</p>
@@ -101,24 +106,31 @@ export const DepartmentPage = () => {
     )},
     {key:5,title:'Actions',
     render:(data:any) =>(
-      <div>
+      <div className='flex gap-2'>
         <CustomButton
           children='Edit'
           onClick={() => handleModalOpen('edit',data)}
+          classes='bg-sky-600 text-white w-24 text-[20px] h-max'
         />
+          <CustomButton
+            children='Delete'
+            danger
+            classes='w-24 text-[20px] h-max'
+            onClick={() =>handleDelete(data)}
+          />
       </div>
     )},
   ]
 
   const renderModalContent = () => (
     <Form form={form} onFinish={onFinish} layout='vertical'>
-      <Form.Item className='mb-2' label='Service Name' name='name' rules={[{ required: true, message: 'Please input sevice name!' }]}>
+      <Form.Item className='mb-2' label={<p>Service Name</p>} name='name' rules={[{ required: true, message: 'Please input sevice name!' }]}>
         <Input />
       </Form.Item>
-      <Form.Item className='mb-2' label='Price' name='price' rules={[{ required: true, message: 'Please input price!' }]}>
+      <Form.Item className='mb-2' label={<p>Price</p>} name='price' rules={[{ required: true, message: 'Please input price!' }]}>
         <InputNumber min={0}  style={{width:'100%'}}/>
       </Form.Item>
-      <Form.Item className='mb-1' label='Department' name='departmentId' rules={[{ required: true, message: 'Please select department!' }]}>
+      <Form.Item className='mb-1' label={<p>Department</p>} name='departmentId' rules={[{ required: true, message: 'Please select department!' }]}>
         <Select className="backdrop-shadow">
           {admin.department.list?.map((data:any) =>(
           <Select.Option value={data.id}>
@@ -127,7 +139,7 @@ export const DepartmentPage = () => {
           ))}
         </Select>
       </Form.Item>
-      <Form.Item className='mb-1' label='Status' name='status' rules={[{ required: true, message: 'Please select status!' }]}>
+      <Form.Item className='mb-1' label={<p>Status</p>} name='status' rules={[{ required: true, message: 'Please select status!' }]}>
         <Select className="backdrop-shadow">
           <Select.Option value={0}>
             Inactive
@@ -150,15 +162,59 @@ export const DepartmentPage = () => {
       </div>
     </Form>
   )
-  console.log(admin)
+
+  const handleDelete = (data: any) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You want to delete this service? ${data.name}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          setIsLoading(true)
+          const formData = new FormData()
+          formData.append('id',data.id)
+          const res = await DeleteService.DELETE(formData);
+          if(res.data.data && res.data.success === 1){
+            setIsLoading(false)
+            Fetch()
+            Swal.fire('Deleted!', `${data.name}`, 'success');
+          }else{
+            setIsLoading(false)
+            throw new Error();
+          }
+          // Handle success or failure accordingly
+         
+        } catch (error) {
+          console.log(error)
+          setIsLoading(false)
+          Swal.fire('Error!', 'Failed to delete item.', 'error');
+        }
+      }else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        Swal.fire({
+          title: "Cancelled",
+          text: "Delete was cancelled :)",
+          icon: "error"
+        });
+      }
+    });
+  };
   return (
     <div>
       <div className='w-full flex justify-between items-center mb-4'>
-        <h1 className='text-[24px] font-bold'>Department</h1>
+        <h1 className='text-[36px] font-bold'>Department</h1>
         <div>
           <CustomButton 
             children='Add service'
             onClick={()=>handleModalOpen('add')}
+            classes='text-[24px] w-max h-max'
           />
         </div>
       </div>
@@ -166,9 +222,11 @@ export const DepartmentPage = () => {
         <CustomTable
           columns={columns}
           datasource={admin?.department?.services}
+          loading={isLoading}
+          classes='text-xl'
         />
       </div>
-      <Modal footer={null} title={act === 'add' ? 'Add Service' : 'Edit Service'} open={isOpen} onCancel={handleClose}>
+      <Modal footer={null} title={act === 'add' ? <p>Add Service</p> : <p>Edit Service</p>} open={isOpen} onCancel={handleClose}>
         {renderModalContent()}
       </Modal>
     </div>

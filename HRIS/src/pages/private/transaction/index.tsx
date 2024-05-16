@@ -630,7 +630,7 @@ try {
               />
               <div className='flex gap-2'>
               <CustomButton
-              children='Print and Checkout'
+              children='Print'
               onClick={() => handlePrint()}
               />
               <CustomButton

@@ -557,6 +557,10 @@ try {
       })
     }
   }
+  const handleCloseCheck = () =>{
+    setIsCheck(false)
+    setTransactData(null)
+  }
   const renderCheckoutContent = () =>(
     <Form>
       <div className='flex flex-col justify-center items-center mb-8 '>
@@ -626,7 +630,7 @@ try {
           <div className='w-full flex justify-between items-center mt-4'>
               <CustomButton
               children='Cancel'
-        
+              onClick={() => handleCloseCheck()}
               />
               <div className='flex gap-2'>
               <CustomButton

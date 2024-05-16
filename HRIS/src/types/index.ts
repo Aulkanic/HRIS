@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface T_GuestForm{
     firstName: string;
     middleInitial: string;
@@ -90,7 +91,7 @@ export interface Guest {
     amountToPay: number;
     amountReceived: number;
     discount: number;
-    chargesFromDepartments: string | null;
+    chargesFromDepartments: any | null;
     serviceCharge: number | null;
     balance: number;
     status: string;

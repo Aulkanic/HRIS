@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from 'react'
-import { DatePicker, Form, Input, InputNumber, Radio, Select, Steps, notification, theme } from 'antd';
+import { DatePicker, Divider, Form, Input, InputNumber, Select, Steps, notification, theme } from 'antd';
 import { currencyFormat } from '../../../config/utils/util';
 import { CustomButton } from '../../../components';
 import cashPaymentIcon from '../../../assets/icon3.png'
@@ -87,9 +87,11 @@ export const AddGuestForm = () => {
       values.status = 'Check-In'
       values.amountToPay = values.roomType === 'Presidential' ? 8000 : values.roomType === 'Family Suit' ? 5500 : 
       values.roomType === 'Superior' ? 4100 : values.roomType === 'Standard' ? 2000 : 1200
-      values.total = (values.amountToPay * values.noOfDays) * ((values.discount && values.discount !== 0) ? (values.discount/100) : 1)
-      values.balance = values.paymentStatus === 'Fully paid' ? 0 : (values.total/2).toFixed(2)
-      values.amountReceived = values.paymentStatus === 'Fully paid' ? values.total : (values.total/2).toFixed(2)
+      values.total = (values.amountToPay * values.noOfDays) 
+      values.balance = (values.total/2).toFixed(2)
+      values.amountReceived = (values.total/2).toFixed(2)
+      values.paymentStatus = 'Partially paid'
+      values.discount = 0
       saveGuestFormInfo(values)
       setCurrent(current + 1);
     }
@@ -204,9 +206,7 @@ export const AddGuestForm = () => {
                 <Form.Item name='departure' className='w-full mb-2' label='Departure'>
                     <DatePicker readOnly className="w-full" />
                 </Form.Item>    
-                <Form.Item name='discount' className='w-full mb-2' label='Discount'>
-                    <InputNumber min={0} className="w-full" />
-                </Form.Item>    
+   
                 </div>
                   <div className='w-[40%]'>
                     <p className='mb-2'>Choose payment method</p>
@@ -220,12 +220,6 @@ export const AddGuestForm = () => {
                         </div>
                         ))}
                     </div>
-                    <Form.Item className='mt-4' label='Payment Status' name='paymentStatus'>
-                      <Radio.Group>
-                        <Radio value={'Fully paid'}>Fully paid</Radio>
-                        <Radio value={'Half paid'}>Half paid</Radio>
-                      </Radio.Group>     
-                    </Form.Item>
                   </div>
                 </div>
                 <div className='w-full mt-8 flex gap-4 justify-end pr-8'>
@@ -270,12 +264,22 @@ export const AddGuestForm = () => {
             </div>
             <div className='flex justify-between items-center'>
               <strong>Payment Method</strong>
-              <p>{admin.form.paymentMethod}({admin.form.paymentStatus})</p>
+              <p>{admin.form.paymentMethod}(Partially Paid)</p>
             </div>
             <div className='flex justify-between items-center'>
-              <strong>Total</strong>
-              <p>{currencyFormat(admin.form.total)}</p>
+              <strong>Amount to Received</strong>
+              <p>{currencyFormat(admin.form.amountReceived)}</p>
             </div>
+            <div className='flex justify-between items-center'>
+              <strong>Balance</strong>
+              <p>{currencyFormat(admin.form.balance)}</p>
+            </div>
+            <Divider className='m-1' />
+            <div className='flex justify-between items-center'>
+              <strong className='text-[20px]'>Total</strong>
+              <p className='text-[20px]'>{currencyFormat(admin.form.total)}</p>
+            </div>
+
           </div>
           <div className='w-[70%] flex justify-between items-center mt-4'>
               <CustomButton

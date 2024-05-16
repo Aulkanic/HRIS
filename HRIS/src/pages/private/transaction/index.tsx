@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AddTransaction, AllDepartmentServices, AllReservations, AllTransaction, CheckoutTransaction, UpdateReservation, UpdateTransaction } from '../../../config/services/request'
 import { saveDepartmentServices, saveReservationList, saveTransactionList, selector } from '../../../zustand/store/store.provider'
 import useStore from '../../../zustand/store/store'
-import { Checkbox, Col, Form, InputNumber, Modal, Radio, Row, Select, Tag, notification } from 'antd'
+import { Checkbox, Col, Divider, Form, InputNumber, Modal, Radio, Row, Select, Tag, notification } from 'antd'
 import { CustomTable } from '../../../components/table/customTable'
 import { CustomButton } from '../../../components'
-import { Guest } from '../../../types'
+import { Guest, Transaction } from '../../../types'
 import { useNavigate } from 'react-router-dom'
 import { RouterUrl } from '../../../routes'
 import { currencyFormat } from '../../../config/utils/util'
@@ -18,6 +18,7 @@ import debitCardIcon from '../../../assets/icon5.png'
 import debitCardIconActive from '../../../assets/icon51.png'
 import clsx from 'clsx'
 import { CheckboxChangeEvent } from 'antd/es/checkbox'
+import { useReactToPrint } from 'react-to-print'
 
 
 const paymentMethod = [
@@ -35,6 +36,7 @@ interface ServiceSelection {
 
 export const TransactionPage = () => {
   const admin = useStore(selector('admin'))
+  const componentRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate()
   const [isOpen,setIsOpen] = useState(false)
   const [isOpen1,setIsOpen1] = useState(false)
@@ -50,7 +52,10 @@ export const TransactionPage = () => {
   })
   const [transactId,setTransactId] = useState(null)
   const [amountToPay,setAmountToPay] = useState(0)
+  const [transactData,setTransactData] = useState<Transaction | null>(null)
+  const [isCheck,setIsCheck] = useState(false)
   const [pay,setPay] = useState('Cash Payment')
+  const [isPrintAttempt, setIsPrintAttempt] = useState(false);
   const [serviceQuantities, setServiceQuantities] = useState<{ [key: string]: number }>({});
 
 
@@ -104,7 +109,43 @@ export const TransactionPage = () => {
           )
         );
       }
-    };
+  };
+
+  const handleDaysChange = (value:any) =>{
+    const updatedReservations = transactData?.guests.reservations.map((reservation: any, index: number) => {
+      if (index === 0) { // Assuming you want to update the first reservation
+        return {
+          ...reservation,
+          noOfDays: value
+        };
+      }
+      return reservation;
+    });
+  
+    const total = Number(transactData?.guests?.reservations[0].room.rate) * Number(value);
+  
+    setTransactData((prev: any) => ({
+      ...prev,
+      guests: {
+        ...prev.guests,
+        reservations: updatedReservations
+      },
+      amountToPay: total
+    }));
+  };
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: 'Receipt',
+    onBeforeGetContent: () => setIsPrintAttempt(true),
+    onAfterPrint: () => {
+      if (isPrintAttempt) {
+        notification.success({
+          message: 'Printed Successfully',
+        });
+        setIsPrintAttempt(false);
+      }
+    },
+  });
 
   const handleDiscountChange = (value: number | null) => {
     if (value !== null) {
@@ -181,6 +222,11 @@ export const TransactionPage = () => {
     }
   }
 
+  const handleCheckoutOpen = (data:any) =>{
+    setIsCheck(true)
+    data.chargesFromDepartments = JSON.parse(data.chargesFromDepartments)
+    setTransactData(data)
+  }
   const columns = (filter !== 'Pending' && filter !== 'Cancelled') ? [
     {key:0,title:'Guest Name',dataIndex:'guests',
       render:(data:any) =>(
@@ -227,7 +273,7 @@ export const TransactionPage = () => {
         />
         <CustomButton
           children={'Check-Out now!'}
-          onClick={() => handleCheckOut(data)}
+          onClick={() => handleCheckoutOpen(data)}
         />
       </div>
     ) : <p>{data.guests?.reservations[0]?.status}</p>
@@ -444,7 +490,7 @@ try {
       transactionId: transactId,
       chargesFromDepartments:selectedServices,
       serviceCharge: calculateTotalForEachDepartment(),
-      amountToPay: amountToPay + calculateTotalForEachDepartment()
+      amountToPay: amountToPay
     }
     const formData = new FormData()
     formData.append('id',payload.transactionId)
@@ -473,33 +519,131 @@ try {
     }
   }
 
-  const handleCheckOut = async(data:any) =>{
-    if(!data.id && !data.guests.reservations[0].id){
+  const handleCheckOut = async() =>{
+    try {
+          if(!transactData?.id && !transactData?.guests?.reservations[0]?.id){
+            notification.error({
+              message: 'Error',
+              description:'No id being processed'
+            })
+          }
+          setIsCheck(false)
+          setIsLoading(true)
+          const formData = new FormData()
+          formData.append('transactionId',transactData?.id?.toString() || '')
+          formData.append('reservationId',transactData?.guests?.reservations[0].id?.toString() || '')
+          formData.append('noOfDays',transactData?.guests?.reservations[0].noOfDays.toString() || '')
+          formData.append('roomId',transactData?.guests?.reservations[0].room.id.toString() || '')
+          formData.append('amountToPay',transactData?.amountToPay.toString() || '')
+          formData.append('discount',transactData?.discount.toString() || '')
+          const res = await CheckoutTransaction.POST(formData)
+          if(res.data.data){
+            notification.success({
+              message: "Check-Out",
+              description:"check out successfully"
+            })
+            Fetch()
+            setIsLoading(false)
+          }else{
+            notification.error({
+              message: "Error",
+              description: res.data.message??"Something went wrong while adding the transaction."
+            })
+            setIsLoading(false)
+          }
+    } catch (error:any) {
       notification.error({
-        message: 'Error',
-        description:'No id being processed'
+        message: error.message || 'Something went wrong'
       })
-    }
-    setIsLoading(true)
-    const formData = new FormData()
-    formData.append('id',data.id?.toString())
-    formData.append('reservationId',data.guests.reservations[0].id?.toString())
-    const res = await CheckoutTransaction.POST(formData)
-    if(res.data.data){
-      notification.success({
-        message: "Check-Out",
-        description:"check out successfully"
-      })
-      Fetch()
-      setIsLoading(false)
-    }else{
-      notification.error({
-        message: "Error",
-        description: res.data.message??"Something went wrong while adding the transaction."
-      })
-      setIsLoading(false)
     }
   }
+  const renderCheckoutContent = () =>(
+    <Form>
+      <div className='flex flex-col justify-center items-center mb-8 '>
+          <div ref={componentRef} className='w-[70%] flex flex-col gap-4 bg-white text-black p-4'>
+            <div className='flex justify-between items-center'>
+              <strong>Guest Name</strong>
+              <p>{transactData?.guests?.firstName} {transactData?.guests?.middleInitial || ''} {transactData?.guests?.lastName}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Room Type</strong>
+              <p>{transactData?.guests?.reservations[0]?.room.type} {currencyFormat(transactData?.guests?.reservations[0]?.room.rate || 0)}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Number of Days</strong>
+              <InputNumber onChange={(value) => handleDaysChange(value)} className='w-16 text-[18px] -mr-11' min={0} variant='borderless' value={transactData?.guests?.reservations[0]?.noOfDays} />
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Number of Pax</strong>
+              <p>{transactData?.guests?.reservations[0]?.noOfPax}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Arrival Date</strong>
+              <p>{new Date(transactData?.guests?.reservations[0]?.arrival || '').toLocaleDateString()}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Departure Date</strong>
+              <p>{new Date(transactData?.guests?.reservations[0]?.departure || '').toLocaleDateString()}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Payment Method</strong>
+              <p>{transactData?.modeOfPayment}(Fully Paid)</p>
+            </div>
+            <div className='flex flex-col'>    
+            <strong className='mb-2'>Services Availed</strong>
+              {transactData?.chargesFromDepartments?.map((val:any) =>(
+                <div className='flex justify-between items-center'>
+                  <p className='text-[16px]'>{val.service}({val.quantity})</p>
+                  <p className='text-[14px]'>{currencyFormat(val.price)}</p>
+                </div>
+              ))}
+                <div className='flex justify-between items-center'>
+                  <p className='text-[16px]'>Total Charges</p>
+                  <p className='text-[14px]'>{currencyFormat(transactData?.serviceCharge || 0)}</p>
+                </div>
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Amount to Received</strong>
+              <p>{currencyFormat(transactData?.amountReceived || 0)}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Balance</strong>
+              <p>{currencyFormat(transactData?.balance || 0)}</p>
+            </div>
+            <Form.Item className='m-0'>
+              <div className='flex justify-between items-center'>
+              <strong>Discount</strong>
+              <InputNumber onChange={(value) => setTransactData((prev:any) =>({...prev,discount:value}))} value={transactData?.discount} className='w-16 text-[18px] -mr-11' min={0} variant='borderless' />
+              </div>
+            </Form.Item>
+            <Divider className='m-1' />
+            <div className='flex justify-between items-center'>
+              <strong className='text-[20px]'>Total</strong>
+              <p className='text-[20px]'>{currencyFormat(calculateDiscountedAmount(((transactData?.amountToPay || 0) + (transactData?.serviceCharge || 0)),(transactData?.discount || 0)))}</p>
+            </div>
+           
+          </div>
+          <div className='w-full flex justify-between items-center mt-4'>
+              <CustomButton
+              children='Cancel'
+        
+              />
+              <div className='flex gap-2'>
+              <CustomButton
+              children='Print and Checkout'
+              onClick={() => handlePrint()}
+              />
+              <CustomButton
+              children='Checkout'
+              onClick={() => handleCheckOut()}
+              loading={isLoading}
+              />
+              </div>
+          </div>
+        </div>
+    </Form>
+  )
+  console.log(transactData)
   return (
     <div>
       <div className='flex justify-between items-center mb-4'>
@@ -533,6 +677,9 @@ try {
       </Modal>
       <Modal footer={null} title={<p>Avail Services!</p>} open={isOpen1} onCancel={handleCloseService}>
         {renderServiceContent()}
+      </Modal>
+      <Modal width={800} footer={null} title={<p>Checkout Now!</p>} open={isCheck} onCancel={() => setIsCheck(false)}>
+        {renderCheckoutContent()}
       </Modal>
     </div>
   )

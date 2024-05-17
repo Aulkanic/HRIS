@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AddTransaction, AllDepartmentServices, AllReservations, AllTransaction, CheckoutTransaction, UpdateReservation, UpdateTransaction } from '../../../config/services/request'
 import { saveDepartmentServices, saveReservationList, saveTransactionList, selector } from '../../../zustand/store/store.provider'
 import useStore from '../../../zustand/store/store'
-import { Checkbox, Col, Divider, Form, InputNumber, Modal, Radio, Row, Select, Tag, notification } from 'antd'
+import { Checkbox, Col, Divider, Form, InputNumber, Modal, Row, Select, Tag, notification } from 'antd'
 import { CustomTable } from '../../../components/table/customTable'
 import { CustomButton } from '../../../components'
 import { Guest, Transaction } from '../../../types'
@@ -326,7 +326,7 @@ export const TransactionPage = () => {
   },
   ]
 
-  const onFinish = async(values:any) =>{
+  const onFinish = async() =>{
 try {
       setIsLoading(true)
       const payload = {
@@ -335,10 +335,10 @@ try {
         status:'Check-In',
         paymentMethod: pay,
         total: calculateDiscountedAmount(dataSource?.total, discount),
-        amountReceived: values.paymentStatus === 'Fully paid' ? calculateDiscountedAmount(dataSource?.total, discount) : calculateDiscountedAmount(dataSource?.total, discount)/2,
+        amountReceived: calculateDiscountedAmount(dataSource?.total, discount)/2,
         discount:discount,
-        balance: values.paymentStatus === 'Fully paid' ? 0 : calculateDiscountedAmount(dataSource?.total, discount)/2,
-        paymentStatus: values.paymentStatus
+        balance: calculateDiscountedAmount(dataSource?.total, discount)/2,
+        paymentStatus: 'Partially paid'
       }
       const formData = new FormData();
       if (payload.guestsId !== null) {
@@ -398,12 +398,6 @@ try {
           </div>
           ))}
       </div>
-      <Form.Item className='mt-4' label='Payment Status' name='paymentStatus'>
-        <Radio.Group>
-          <Radio value={'Fully paid'}>Fully paid</Radio>
-          <Radio value={'Half paid'}>Half paid</Radio>
-        </Radio.Group>     
-      </Form.Item>
       <Form.Item name='discount' className='w-full mb-2' label='Discount'>
           <InputNumber onChange={handleDiscountChange} min={0} className="w-full" />
       </Form.Item>

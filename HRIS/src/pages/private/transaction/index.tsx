@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react'
 import { AddTransaction, AllDepartmentServices, AllReservations, AllTransaction, CheckoutTransaction, UpdateReservation, UpdateTransaction } from '../../../config/services/request'
@@ -42,7 +43,7 @@ export const TransactionPage = () => {
   const [isOpen1,setIsOpen1] = useState(false)
   const [isLoading,setIsLoading] = useState(false)
   const [filter,setFilter] = useState('Pending')
-  const [discount, setDiscount] = useState(0);
+  const [discount] = useState(0);
   const [selectedServices, setSelectedServices] = useState<ServiceSelection[]>([]);
   const [dataSource, setDataSource] =  useState({
     total:0,

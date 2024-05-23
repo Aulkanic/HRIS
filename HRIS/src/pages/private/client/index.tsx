@@ -9,7 +9,8 @@ import { HiUserAdd } from "react-icons/hi";
 import { useNavigate } from 'react-router-dom'
 import { RouterUrl } from '../../../routes'
 import Swal from 'sweetalert2'
-import { Form, Input, Modal, notification } from 'antd'
+import { DatePicker, Form, Input, Modal, notification } from 'antd'
+import dayjs from 'dayjs'
 
 export const ClientPage = () => {
   const navigate = useNavigate()
@@ -72,6 +73,7 @@ export const ClientPage = () => {
   }
 
   const handleModalOpen = (data:any) =>{
+     data.birthday = dayjs(data.birthday)
      form.setFieldsValue(data)
      setId(data.id)
      setIsOpen(true)
@@ -158,6 +160,9 @@ try {
       formData.append('city',values.city)
       formData.append('province',values.province)
       formData.append('contactNo',values.contactNo)  
+      formData.append('birthday',new Date(values.birthday).toISOString())  
+      formData.append('email',values.email)  
+      formData.append('nationality',values.nationality)  
       const res = await UpdateGuest.PUT(formData)
       if(res.data.data){
         notification.success({
@@ -208,6 +213,17 @@ try {
       </Form.Item>
       <Form.Item className='flex-1' label={<p>Contact Number</p>} name='contactNo'>
         <Input addonBefore={<p className="bg-white">+63</p>} />
+      </Form.Item>
+      </div>
+      <div className='flex gap-4'>
+      <Form.Item className='flex-1' label={<p>Birthday</p>} name='birthday'>
+        <DatePicker className='w-full' />
+      </Form.Item>
+      <Form.Item className='flex-1' label={<p>Email</p>} name='email'>
+        <Input />
+      </Form.Item>
+      <Form.Item className='flex-1' label={<p>Nationality</p>} name='nationality'>
+        <Input />
       </Form.Item>
       </div>
       <div className='w-full flex gap-4 justify-end items-end my-4'>

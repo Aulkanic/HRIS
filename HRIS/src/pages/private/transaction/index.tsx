@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AddTransaction, AllDepartmentServices, AllReservations, AllTransaction, CheckoutTransaction, UpdateReservation, UpdateTransaction } from '../../../config/services/request'
 import { saveDepartmentServices, saveReservationList, saveTransactionList, selector } from '../../../zustand/store/store.provider'
 import useStore from '../../../zustand/store/store'
-import { Checkbox, Col, Divider, Form, InputNumber, Modal, Row, Select, Tag, notification } from 'antd'
+import { Checkbox, Col, DatePicker, Divider, Form, Input, InputNumber, Modal, Row, Select, Tag, notification } from 'antd'
 import { CustomTable } from '../../../components/table/customTable'
 import { CustomButton } from '../../../components'
 import { Guest, Transaction } from '../../../types'
@@ -147,11 +147,7 @@ export const TransactionPage = () => {
     },
   });
 
-  const handleDiscountChange = (value: number | null) => {
-    if (value !== null) {
-      setDiscount(value);
-    }
-  };
+
   const calculateDiscountedAmount = (total: number, percentage: number) => {
     return total - (total * percentage) / 100;
   };
@@ -225,6 +221,7 @@ export const TransactionPage = () => {
   const handleCheckoutOpen = (data:any) =>{
     setIsCheck(true)
     data.chargesFromDepartments = JSON.parse(data.chargesFromDepartments)
+    data.cardInfo = JSON.parse(data.cardInfo)
     setTransactData(data)
   }
   const columns = (filter !== 'Pending' && filter !== 'Cancelled') ? [
@@ -326,7 +323,7 @@ export const TransactionPage = () => {
   },
   ]
 
-  const onFinish = async() =>{
+  const onFinish = async(values:any) =>{
 try {
       setIsLoading(true)
       const payload = {
@@ -354,6 +351,10 @@ try {
       formData.append('discount', payload.discount.toString());
       formData.append('balance', payload.balance.toString());
       formData.append('paymentStatus', payload.paymentStatus);
+      formData.append('cardHolderName', values.cardHolderName);
+      formData.append('digitCardNumber', values.digitCardNumber);
+      formData.append('expiryDate', values.expiryDate ? new Date(values.expiryDate).toISOString() : '');
+      formData.append('referenceNumber', values.referenceNumber);
       const res = await AddTransaction.POST(formData)
       if(res.data.data){
         notification.success({
@@ -398,9 +399,20 @@ try {
           </div>
           ))}
       </div>
-      <Form.Item name='discount' className='w-full mb-2' label='Discount'>
-          <InputNumber onChange={handleDiscountChange} min={0} className="w-full" />
-      </Form.Item>
+      {pay !== 'Cash Payment' && <div className='flex flex-col gap-2 mt-4'>
+        <Form.Item name='cardHolderName' className='w-full mb-2' label='Card Holder Name'>
+          <Input  />
+        </Form.Item>
+        <Form.Item name='digitCardNumber' className='w-full mb-2' label='16 Digit Card number'>
+          <Input  />
+        </Form.Item>
+        <Form.Item name='expiryDate' className='w-full mb-2' label='Expiration date'>
+          <DatePicker className='w-full'  />
+        </Form.Item>
+        <Form.Item name='referenceNumber' className='w-full mb-2' label='Reference number'>
+          <Input  />
+        </Form.Item>
+        </div>}
       <div>
         Total amount to pay:{' '}{currencyFormat(calculateDiscountedAmount(dataSource?.total, discount))}
       </div>    
@@ -564,6 +576,18 @@ try {
               <p>{transactData?.guests?.firstName} {transactData?.guests?.middleInitial || ''} {transactData?.guests?.lastName}</p>
             </div>
             <div className='flex justify-between items-center'>
+              <strong>Address</strong>
+              <p>{transactData?.guests?.houseNo} {transactData?.guests?.barangay} {transactData?.guests?.city} {transactData?.guests?.province}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Contact Number</strong>
+              <p>{transactData?.guests?.contactNo}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Guest Name</strong>
+              <p>{transactData?.guests?.firstName} {transactData?.guests?.middleInitial || ''} {transactData?.guests?.lastName}</p>
+            </div>
+            <div className='flex justify-between items-center'>
               <strong>Room Type</strong>
               <p>{transactData?.guests?.reservations[0]?.room.type} {currencyFormat(transactData?.guests?.reservations[0]?.room.rate || 0)}</p>
             </div>
@@ -584,9 +608,35 @@ try {
               <p>{new Date(transactData?.guests?.reservations[0]?.departure || '').toLocaleDateString()}</p>
             </div>
             <div className='flex justify-between items-center'>
+              <strong>Room Number</strong>
+              <p>{transactData?.guests?.reservations[0].roomNumber}</p>
+            </div>
+            <div className='flex justify-between items-center'>
               <strong>Payment Method</strong>
               <p>{transactData?.modeOfPayment}(Fully Paid)</p>
             </div>
+            {transactData?.modeOfPayment !== 'Cash Payment' && <div>
+            <div className='flex justify-between items-center'>
+              <strong className='text-[16px]'>Card Info</strong>
+            </div>
+            <div className='flex justify-between items-center'>
+              <p className='text-[14px]'>Card Holder Name</p>
+              <p className='text-[14px]'>{transactData?.cardInfo?.cardHolderName}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <p className='text-[14px]'>16 Digital Card Number</p>
+              <p className='text-[14px]'>{transactData?.cardInfo?.digitCardNumber}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <p className='text-[14px]'>Expiry Date</p>
+              <p className='text-[14px]'>{new Date(transactData?.cardInfo?.expiryDate).toLocaleDateString()}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <p className='text-[14px]'>Reference Number</p>
+              <p className='text-[14px]'>{transactData?.cardInfo?.referenceNumber}</p>
+            </div>
+            </div>}
+
             <div className='flex flex-col'>    
             <strong className='mb-2'>Services Availed</strong>
               {transactData?.chargesFromDepartments?.map((val:any) =>(

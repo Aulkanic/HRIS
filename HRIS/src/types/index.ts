@@ -9,6 +9,9 @@ export interface T_GuestForm{
     city: string;
     province: string;
     contactNum: string;
+    birthday: Date | null;
+    email:string;
+    nationality:string;
     paymentMethod:string;
     amountToPay: number;
     amountReceived:number;
@@ -19,7 +22,12 @@ export interface T_GuestForm{
     roomType: string;
     noOfDays: number;
     noOfPax: number;
+    roomNumber:string;
     paymentStatus: string;
+    cardHolderName:string;
+    digitCardNumber:string;
+    expiryDate:Date | null;
+    referenceNumber:string;
 }
 
 export interface T_ReserveForm{
@@ -37,6 +45,9 @@ export interface T_ReserveForm{
     roomType: string;
     noOfDays: number;
     noOfPax: number;
+    birthday: Date | null;
+    email:string;
+    nationality:string;
 }
 
 
@@ -61,6 +72,7 @@ export interface Room {
     noOfPax: number;
     arrival: Date;
     departure: Date;
+    roomNumber:string;
     status: string;
     createdAt: Date;
     updatedAt: Date;
@@ -98,6 +110,7 @@ export interface Guest {
     remarks: string | null;
     createdAt: Date;
     updatedAt: Date;
+    cardInfo: any;
     guests: Guest; // Guest interface as a property
   }
   

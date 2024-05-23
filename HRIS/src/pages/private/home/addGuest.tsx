@@ -29,10 +29,8 @@ export const AddGuestForm = () => {
     const componentRef = useRef<HTMLDivElement | null>(null);
     const [isLoading,setIsLoading] = useState(false)
     const [form] = Form.useForm();
-    const arrival = Form.useWatch('arrival',form)
-    const numDays = Form.useWatch('noOfDays',form)
     const admin = useStore(selector('admin'))
-    const [pay,setPay] = useState('Cash Payment')
+    const [pay,setPay] = useState(admin.form.paymentMethod || 'Cash Payment')
     const { token } = theme.useToken();
     const [current, setCurrent] = useState(0);
 
@@ -49,6 +47,8 @@ export const AddGuestForm = () => {
         if(admin.form.arrival){
           admin.form.arrival = dayjs(admin.form.arrival || '')
           admin.form.departure = dayjs(admin.form.departure || '')
+          admin.form.birthday = admin.form.birthday ? dayjs(admin.form.birthday) : undefined
+          admin.form.expiryDate = dayjs(admin.form.expiryDate)
         }
         form.setFieldsValue(admin.form)
       }
@@ -63,9 +63,8 @@ export const AddGuestForm = () => {
   })
 
     const onValuesChange = (changedValues: any, allValues: any) => {
-      console.log(changedValues)
       const { arrival, noOfDays } = allValues;
-  
+      console.log(changedValues)
       if (arrival && noOfDays) {
         const arrivalDate = new Date(arrival || '');
         const departure = new Date(arrivalDate.setDate(arrivalDate.getDate() + noOfDays));
@@ -74,6 +73,7 @@ export const AddGuestForm = () => {
         });
       }
     };
+
 
     const saveFirstPart = (values:any) =>{
       console.log('Success:', values);
@@ -100,6 +100,8 @@ export const AddGuestForm = () => {
         setIsLoading(true)
         admin.form.arrival = new Date(admin.form.arrival).toISOString()
         admin.form.departure = new Date(admin.form.departure).toISOString()
+        admin.form.birthday = new Date(admin.form.birthday).toISOString()
+        admin.form.expiryDate = new Date(admin.form.expiryDate).toISOString()
           const formData = new FormData();
               for (const key in admin.form) {
                 if (Object.hasOwnProperty.call(admin.form,key)) {
@@ -114,6 +116,7 @@ export const AddGuestForm = () => {
                   }
                 }
           }
+
           const res = await AddGuest.POST(formData)
           if(res.data.data){
             notification.success({
@@ -171,6 +174,17 @@ export const AddGuestForm = () => {
                     <Input  />
                 </Form.Item>
                 </div>
+                <div className='flex w-full gap-4 flex-nowrap'>
+                <Form.Item name='birthday' className='flex-1' label='Birthday' rules={[{ required: true, message: 'Please select birthday!' }]}>
+                    <DatePicker className='w-full'  />
+                </Form.Item>
+                <Form.Item name='email' className='flex-1' label='Email' rules={[{ required: true, message: 'Please input email!' }]}>
+                    <Input  />
+                </Form.Item>
+                <Form.Item name='nationality' className='flex-1' label='Nationality'>
+                    <Input  />
+                </Form.Item>
+                </div>
                 <div className='w-full flex justify-end items-end'>
                   <CustomButton
                     children='Next'
@@ -185,7 +199,7 @@ export const AddGuestForm = () => {
         content: <Form onValuesChange={onValuesChange} form={form} onFinish={saveSecondPart} className='flex flex-col justify-top items-center py-8' layout='vertical'>
                 <div className='w-[80%] flex gap-8'>
                 <div className='w-[50%]'>
-                <Form.Item name='roomId' className='w-full mb-2' label='Room Type'>
+                <Form.Item name='roomId' className='w-full mb-2' label='Room Type'  rules={[{ required: true, message: 'Please select room type!' }]}>
                 <Select className="backdrop-shadow">
                   {admin.rooms.filter((det:any) => det.status)?.map((val:any,idx:number) =>(
                   <Select.Option key={idx} value={val.id}>
@@ -193,6 +207,9 @@ export const AddGuestForm = () => {
                   </Select.Option>
                   ))}
                 </Select>
+                </Form.Item>
+                <Form.Item name='roomNumber' className='w-full mb-2' label='Room Number'  rules={[{ required: true, message: 'Please input room number!' }]}>
+                    <Input  />
                 </Form.Item>
                 <Form.Item name='noOfDays' className='w-full mb-2' label='Number of Days'>
                     <InputNumber min={1} className='w-full'  />
@@ -220,6 +237,20 @@ export const AddGuestForm = () => {
                         </div>
                         ))}
                     </div>
+                    {pay !== 'Cash Payment' && <div className='flex flex-col gap-2 mt-4'>
+                    <Form.Item name='cardHolderName' className='w-full mb-2' label='Card Holder Name'>
+                      <Input  />
+                    </Form.Item>
+                    <Form.Item name='digitCardNumber' className='w-full mb-2' label='16 Digit Card number'>
+                      <Input  />
+                    </Form.Item>
+                    <Form.Item name='expiryDate' className='w-full mb-2' label='Expiration date'>
+                      <DatePicker className='w-full'  />
+                    </Form.Item>
+                    <Form.Item name='referenceNumber' className='w-full mb-2' label='Reference number'>
+                      <Input  />
+                    </Form.Item>
+                    </div>}
                   </div>
                 </div>
                 <div className='w-full mt-8 flex gap-4 justify-end pr-8'>
@@ -243,8 +274,24 @@ export const AddGuestForm = () => {
               <p>{admin.form.firstName} {admin.form.middleInitial || ''} {admin.form.surName}</p>
             </div>
             <div className='flex justify-between items-center'>
+              <strong>Email</strong>
+              <p>{admin.form.email}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Address</strong>
+              <p>{admin.form.houseNum} {admin.form.barangay} {admin.form.city} {admin.form.province}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Contact Number</strong>
+              <p>{admin.form.contactNum}</p>
+            </div>
+            <div className='flex justify-between items-center'>
               <strong>Room Type</strong>
               <p>{admin.form.roomType} {currencyFormat(admin.form.amountToPay)}</p>
+            </div>
+            <div className='flex justify-between items-center'>
+              <strong>Room Number</strong>
+              <p>{admin.form.roomNumber}</p>
             </div>
             <div className='flex justify-between items-center'>
               <strong>Number of Days</strong>
@@ -311,7 +358,7 @@ export const AddGuestForm = () => {
         border: `1px dashed ${token.colorBorder}`,
         marginTop: 16,
     };
-    console.log(arrival,numDays)
+    console.log(pay)
   return (
     <>
     <div>

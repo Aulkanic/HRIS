@@ -54,7 +54,15 @@ const initialState:AdminState = {
         roomType:'',
         noOfDays:1,
         noOfPax:0,
-        paymentStatus:''
+        paymentStatus:'',
+        birthday: null,
+        email:'',
+        nationality:'',
+        roomNumber:'',
+        cardHolderName:'',
+        digitCardNumber:'',
+        expiryDate:null,
+        referenceNumber:''
     },
     reserveFrm:{
         firstName:'',
@@ -71,6 +79,9 @@ const initialState:AdminState = {
         roomType:'',
         noOfDays:1,
         noOfPax:0,
+        birthday: null,
+        email:'',
+        nationality:'',
     },
     rooms:[],
     guests:[],

@@ -63,6 +63,7 @@ export const AddReservationForm = () => {
       admin.reserveFrm.roomType = admin.rooms?.find((item:any) => item.id === values.roomId)?.type
       admin.reserveFrm.arrival = new Date(values.arrival).toISOString()
       admin.reserveFrm.departure = new Date(values.departure).toISOString()
+      admin.reserveFrm.birthday = new Date(admin.reserveFrm.birthday).toISOString()
       try { 
         setIsLoading(true)
           const formData = new FormData();
@@ -137,6 +138,17 @@ export const AddReservationForm = () => {
                     <Input  />
                 </Form.Item>
                 </div>
+                <div className='flex w-full gap-4 flex-nowrap'>
+                <Form.Item name='birthday' className='flex-1' label='Birthday' rules={[{ required: true, message: 'Please select birthday!' }]}>
+                    <DatePicker className='w-full'  />
+                </Form.Item>
+                <Form.Item name='email' className='flex-1' label='Email' rules={[{ required: true, message: 'Please input email!' }]}>
+                    <Input  />
+                </Form.Item>
+                <Form.Item name='nationality' className='flex-1' label='Nationality'>
+                    <Input  />
+                </Form.Item>
+                </div>
                 <div className='w-full flex justify-end items-end'>
                   <CustomButton
                     children='Next'
@@ -159,6 +171,9 @@ export const AddReservationForm = () => {
                   </Select.Option>
                   ))}
                 </Select>
+                </Form.Item>
+                <Form.Item name='roomNumber' className='w-full mb-2' label='Room Number'  rules={[{ required: true, message: 'Please input room number!' }]}>
+                    <Input  />
                 </Form.Item>
                 <Form.Item name='noOfDays' className='w-full mb-2' label='Number of Days'>
                     <InputNumber min={1} className='w-full'  />
